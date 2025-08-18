@@ -1,0 +1,10 @@
+{
+  "name": "chatbot-cli",
+  "version": "1.0.0",
+  "description": "A simple chatbot CLI",
+  "main": "main.ts",
+  "type": "module",
+  "scripts": {
+    "start": "npx tsx main.ts"
+  }
+}

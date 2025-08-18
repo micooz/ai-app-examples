@@ -1,0 +1,14 @@
+{
+  "name": "ai-app-examples",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "author": "micooz@gmail.com",
+  "repository": "https://github.com/micooz/ai-app-examples",
+  "dependencies": {
+    "dotenv": "^17.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22"
+  }
+}
