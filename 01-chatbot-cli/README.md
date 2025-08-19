@@ -19,3 +19,8 @@ API_KEY=sk-xxx
 ```bash
 npx tsx main.ts
 ```
+
+# 视频讲解
+
+- 实战：https://www.bilibili.com/video/BV1UbeAzfEaS/
+- 解析：https://www.bilibili.com/video/BV1maeAzoEyz/
