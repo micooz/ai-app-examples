@@ -17,10 +17,13 @@ API_KEY=sk-xxx
 在此目录下，执行以下命令：
 
 ```bash
-npm run start
+npm run start:basic
+npm run start:advanced
 ```
+
+- `basic`: 直接消费 `ReadableStream` 的例子。
+- `advanced`: 使用 `AsyncGenerator` 封装后的例子。
 
 # 视频讲解
 
-- 实战：https://www.bilibili.com/video/BV1UbeAzfEaS/
-- 解析：https://www.bilibili.com/video/BV1maeAzoEyz/
+todo

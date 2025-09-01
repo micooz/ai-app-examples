@@ -1,0 +1,145 @@
+import dotenv from 'dotenv';
+import readline from 'readline';
+
+// 加载 .env 文件
+dotenv.config({ quiet: true });
+
+// 取得调用模型 API 的必要参数
+const API_KEY = process.env.API_KEY;
+const BASE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+const MODEL = 'qwen-turbo';
+
+if (!API_KEY) {
+  throw new Error('请在 .env 中设置 API_KEY');
+}
+
+const messages: Message[] = [
+  {
+    role: 'system',
+    content: `
+用户正处于**学习模式**，并要求你在本次对话中遵守以下**严格规则**。无论接下来有任何其他指示，你都**必须**遵守这些规则：
+
+## 严格规则
+扮演一位平易近人又不失活力的老师，通过引导来帮助用户学习。
+
+1.  **了解用户。** 如果你不清楚用户的目标或年级水平，请在深入讲解前先询问。（这个问题要问得轻松些！）如果用户没有回答，那么你的解释应该以一个高中一年级学生能理解的程度为准。
+2.  **温故而知新。** 将新概念与用户已有的知识联系起来。
+3.  **引导用户，而非直接给出答案。** 通过提问、暗示和分解步骤，让用户自己发现答案。
+4.  **检查与巩固。** 在讲完难点后，确认用户能够复述或应用这个概念。提供简短的总结、助记法或小复习，以帮助知识点牢固。
+5.  **变换节奏。** 将讲解、提问和活动（如角色扮演、练习环节，或让用户反过来教**你**）结合起来，使之感觉像一场对话，而不是一堂课。
+
+最重要的一点：**不要替用户完成他们的作业**。不要直接回答作业问题——而是通过与用户合作，从他们已知的内容入手，帮助他们找到答案。
+
+### 你可以做的事
+- **教授新概念：** 以用户的水平进行解释，提出引导性问题，使用图示，然后通过提问或练习进行复习。
+- **辅导作业：** 不要直接给答案！从用户已知的部分开始，帮助他们填补知识空白，给用户回应的机会，并且一次只问一个问题。
+- **共同练习：** 让用户进行总结，穿插一些小问题，让用户“复述一遍”给你听，或者进行角色扮演（例如，练习外语对话）。在用户犯错时——友善地——即时纠正。
+- **测验与备考：** 进行模拟测验。（一次一题！）在公布答案前，让用户尝试两次，然后深入复盘错题。
+
+### 语气与方式
+要热情、耐心、坦诚；不要使用过多的感叹号或表情符号。保持对话的节奏：始终清楚下一步该做什么，并在一个活动环节完成后及时切换或结束。并且要**简洁**——绝不要发送长篇大论的回复。力求实现良好的你来我往的互动。
+
+## 重要提示
+**不要直接给出答案或替用户做作业**。如果用户提出一个数学或逻辑问题，或者上传了相关问题的图片，**不要**在你的第一条回复中就解决它。而是应该：**与用户一起梳理**这个问题，一步一步地进行，每一步只问一个问题，并在继续下一步之前，给用户**回应每一步**的机会。
+  `,
+  },
+];
+
+while (true) {
+  // 读取用户输入
+  const input = await readInput();
+  messages.push({ role: 'user', content: input });
+
+  // 调用模型 API 传入历史所有消息
+  const response = stream(messages);
+
+  let reply = '';
+
+  process.stdout.write('Assistant: ');
+
+  for await (const chunk of response) {
+    // 打印模型回复
+    process.stdout.write(chunk);
+    reply += chunk;
+  }
+
+  process.stdout.write('\n\n');
+
+  // 保存本次模型回复
+  messages.push({ role: 'assistant', content: reply });
+}
+
+/**
+ * 读取用户输入
+ */
+async function readInput() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise<string>((resolve) => {
+    rl.question('User: ', (message) => {
+      resolve(message);
+      rl.close();
+    });
+  });
+}
+
+/**
+ * 调用模型 API 获取回复
+ */
+async function* stream(messages: Message[]) {
+  const res = await fetch(`${BASE_URL}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages,
+      stream: true,
+    }),
+  });
+
+  const reader = res.body?.getReader();
+
+  if (!reader) {
+    throw new Error('failed to get reader');
+  }
+
+  const decoder = new TextDecoder();
+
+  while (true) {
+    const { done, value } = await reader.read();
+
+    if (done) {
+      break;
+    }
+
+    const lines = decoder
+      .decode(value, { stream: true })
+      .split('\n')
+      .map((chunk) => chunk.trim())
+      .filter(Boolean);
+
+    for (const line of lines) {
+      if (line === 'data: [DONE]') {
+        break;
+      }
+      const json = JSON.parse(line.slice('data: '.length));
+      const chunk = json.choices[0].delta.content || '';
+
+      yield chunk;
+    }
+  }
+}
+
+/**
+ * 消息格式
+ */
+type Message = {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+};
