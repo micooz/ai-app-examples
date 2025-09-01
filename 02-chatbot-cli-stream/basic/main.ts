@@ -51,20 +51,14 @@ while (true) {
   messages.push({ role: 'user', content: input });
 
   // 调用模型 API 传入历史所有消息
-  const reader = await stream(messages);
+  const response = await stream(messages);
   const decoder = new TextDecoder();
 
   let reply = '';
 
   process.stdout.write('Assistant: ');
 
-  while (true) {
-    const { done, value } = await reader.read();
-
-    if (done) {
-      break;
-    }
-
+  for await (const value of response) {
     const lines = decoder
       .decode(value, { stream: true })
       .split('\n')
@@ -75,8 +69,10 @@ while (true) {
       if (line === 'data: [DONE]') {
         break;
       }
+
       const json = JSON.parse(line.slice('data: '.length));
       const chunk = json.choices[0].delta.content || '';
+
       // 打印模型回复
       process.stdout.write(chunk);
       reply += chunk;
@@ -123,13 +119,11 @@ async function stream(messages: Message[]) {
     }),
   });
 
-  const reader = res.body?.getReader();
-
-  if (!reader) {
-    throw new Error('failed to get reader');
+  if (!res.body) {
+    throw new Error('failed to get body');
   }
 
-  return reader;
+  return res.body;
 }
 
 /**
