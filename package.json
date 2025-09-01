@@ -9,5 +9,8 @@
   },
   "devDependencies": {
     "@types/node": "^22"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
