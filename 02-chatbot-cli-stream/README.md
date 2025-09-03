@@ -1,6 +1,6 @@
-# 01-chatbot-cli
+# 02-chatbot-cli-stream
 
-一个基于命令行界面的聊天机器人。
+一个基于命令行界面的聊天机器人（流式输出版本）
 
 # 配置 API Key
 
@@ -21,9 +21,9 @@ npm run start:basic
 npm run start:advanced
 ```
 
-- `basic`: 直接消费 `ReadableStream` 的例子。
-- `advanced`: 使用 `AsyncGenerator` 封装后的例子。
+- `basic`: 直接处理 `ReadableStream` 的版本。
+- `advanced`: 使用 `AsyncGenerator` 重构后的版本。
 
 # 视频讲解
 
-todo
+https://www.bilibili.com/video/BV1tUagzGEJ4/

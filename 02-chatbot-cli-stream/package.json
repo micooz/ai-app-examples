@@ -1,5 +1,5 @@
 {
-  "name": "chatbot-cli",
+  "name": "chatbot-cli-stream",
   "version": "1.0.0",
   "description": "A simple chatbot CLI in stream mode",
   "main": "main.ts",
