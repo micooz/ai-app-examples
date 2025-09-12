@@ -28,7 +28,7 @@ export default function App() {
    */
   useMount(async () => {
     const response = await fetch('/api/history');
-    const messages = await response.json();
+    const messages = await response.json().catch(() => []);
     state.messages = messages;
 
     setTimeout(() => {
@@ -54,6 +54,7 @@ export default function App() {
     }
 
     if (state.input.trim() === '') {
+      inputRef.current?.focus();
       return;
     }
 
