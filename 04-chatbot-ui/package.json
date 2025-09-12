@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "run-p dev:*",
     "dev:ui": "vite",
-    "dev:server": "npx tsx ./server/main.ts",
+    "dev:server": "npx tsx --watch ./server/main.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -17,6 +17,7 @@
     "@langchain/openai": "^0.6.11",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.13",
+    "ahooks": "^3.9.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "express": "^5.1.0",

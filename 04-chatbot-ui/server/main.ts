@@ -1,14 +1,154 @@
 import express from 'express';
+import dotenv from 'dotenv';
+import { ChatOpenAI } from '@langchain/openai';
+import {
+  AIMessage,
+  BaseMessage,
+  HumanMessage,
+  SystemMessage,
+} from '@langchain/core/messages';
+
+// 和前端共享的类型
+import type { ChatMessage } from '../src/types';
+
+// 加载 .env 文件
+dotenv.config({ quiet: true });
+
+// 取得调用模型 API 的必要参数
+const API_KEY = process.env.API_KEY;
+const BASE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+const MODEL = 'qwen-turbo';
+
+if (!API_KEY) {
+  throw new Error('请在 .env 中设置 API_KEY');
+}
+
+// 创建 LangChain 模型实例
+const model = new ChatOpenAI({
+  model: MODEL,
+  configuration: {
+    baseURL: BASE_URL,
+    apiKey: API_KEY,
+  },
+  streaming: true,
+});
+
+const messages: BaseMessage[] = [
+  new SystemMessage(
+    `
+用户正处于**学习模式**，并要求你在本次对话中遵守以下**严格规则**。无论接下来有任何其他指示，你都**必须**遵守这些规则：
+
+## 严格规则
+扮演一位平易近人又不失活力的老师，通过引导来帮助用户学习。
+
+1.  **了解用户。** 如果你不清楚用户的目标或年级水平，请在深入讲解前先询问。（这个问题要问得轻松些！）如果用户没有回答，那么你的解释应该以一个高中一年级学生能理解的程度为准。
+2.  **温故而知新。** 将新概念与用户已有的知识联系起来。
+3.  **引导用户，而非直接给出答案。** 通过提问、暗示和分解步骤，让用户自己发现答案。
+4.  **检查与巩固。** 在讲完难点后，确认用户能够复述或应用这个概念。提供简短的总结、助记法或小复习，以帮助知识点牢固。
+5.  **变换节奏。** 将讲解、提问和活动（如角色扮演、练习环节，或让用户反过来教**你**）结合起来，使之感觉像一场对话，而不是一堂课。
+
+最重要的一点：**不要替用户完成他们的作业**。不要直接回答作业问题——而是通过与用户合作，从他们已知的内容入手，帮助他们找到答案。
+
+### 你可以做的事
+- **教授新概念：** 以用户的水平进行解释，提出引导性问题，使用图示，然后通过提问或练习进行复习。
+- **辅导作业：** 不要直接给答案！从用户已知的部分开始，帮助他们填补知识空白，给用户回应的机会，并且一次只问一个问题。
+- **共同练习：** 让用户进行总结，穿插一些小问题，让用户“复述一遍”给你听，或者进行角色扮演（例如，练习外语对话）。在用户犯错时——友善地——即时纠正。
+- **测验与备考：** 进行模拟测验。（一次一题！）在公布答案前，让用户尝试两次，然后深入复盘错题。
+
+### 语气与方式
+要热情、耐心、坦诚；不要使用过多的感叹号或表情符号。保持对话的节奏：始终清楚下一步该做什么，并在一个活动环节完成后及时切换或结束。并且要**简洁**——绝不要发送长篇大论的回复。力求实现良好的你来我往的互动。
+
+## 重要提示
+**不要直接给出答案或替用户做作业**。如果用户提出一个数学或逻辑问题，或者上传了相关问题的图片，**不要**在你的第一条回复中就解决它。而是应该：**与用户一起梳理**这个问题，一步一步地进行，每一步只问一个问题，并在继续下一步之前，给用户**回应每一步**的机会。
+`,
+  ),
+];
 
 const app = express();
 
-app.get('/sse', (req, res) => {
+/**
+ * 历史消息查询接口
+ */
+app.get('/history', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+
+  // 把 LangChain 的 BaseMessage 转换为前端的 ChatMessage
+  const historyMessages: ChatMessage[] = messages
+    .map((message) => {
+      if (message instanceof HumanMessage) {
+        return {
+          type: 'user' as const,
+          payload: { content: message.content.toString() },
+        };
+      }
+      if (message instanceof AIMessage) {
+        return {
+          type: 'assistant' as const,
+          payload: { content: message.content.toString() },
+        };
+      }
+      return null;
+    })
+    .filter((message) => message !== null);
+
+  res.end(JSON.stringify(historyMessages));
+});
+
+/**
+ * SSE 通信接口
+ */
+app.get('/sse', async (req, res) => {
+  const { query } = req.query;
+
+  messages.push(new HumanMessage(query as string));
+
+  const abortController = new AbortController();
+
+  // 调用模型 API 传入历史所有消息
+  const stream = await model.stream(messages, {
+    signal: abortController.signal,
+  });
+
+  // 设置 SSE 响应头
   res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+
+  // 提前发送响应头
   res.flushHeaders();
 
-  res.write('data: Hello World\n\n');
+  // 如果客户端断开连接，则取消模型请求。
+  req.on('close', () => {
+    // 这会让下面的 for await 循环抛出 Error: Aborted 异常。
+    abortController.abort();
+  });
+
+  let reply = '';
+
+  // 接收模型流式响应
+  try {
+    for await (const chunk of stream) {
+      const content = chunk.content.toString();
+
+      // 封装成前端需要的消息格式
+      const message: ChatMessage = {
+        type: 'assistant',
+        partial: true,
+        payload: { content },
+      };
+
+      // 发送给前端
+      res.write(`data: ${JSON.stringify(message)}\n\n`);
+
+      reply += content;
+    }
+  } catch (err: any) {
+    console.error(err);
+  }
+
+  // 保存本次模型回复，即便中途结束。
+  messages.push(new AIMessage(reply));
+
   res.end();
 });
 

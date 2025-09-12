@@ -8,7 +8,8 @@
     "dotenv": "^17.2.1"
   },
   "devDependencies": {
-    "@types/node": "^22"
+    "@types/node": "^22",
+    "prettier-plugin-tailwindcss": "^0.6.14"
   },
   "engines": {
     "node": ">=22"
