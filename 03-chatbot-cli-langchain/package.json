@@ -1,0 +1,14 @@
+{
+  "name": "chatbot-cli-langchain",
+  "version": "1.0.0",
+  "description": "A simple chatbot CLI using LangChain",
+  "main": "main.ts",
+  "type": "module",
+  "scripts": {
+    "start": "npx tsx ./main.ts"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.75",
+    "@langchain/openai": "^0.6.11"
+  }
+}
