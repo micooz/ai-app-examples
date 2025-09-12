@@ -3,10 +3,9 @@ import { useKeyPress, useMount, useReactive } from 'ahooks';
 import { useRef } from 'react';
 
 import { cn } from './lib/utils';
-import { MessageItem } from './components/MessageItem';
-
 import { sse } from './lib/sse';
 import type { ChatMessage } from './types';
+import { MessageItem } from './components/MessageItem';
 
 export default function App() {
   const state = useReactive({
@@ -89,7 +88,7 @@ export default function App() {
 
         const lastMessage = state.messages[state.messages.length - 1];
 
-        // 处理不完全消息
+        // 合并不完全消息
         if (message.partial && lastMessage?.partial) {
           lastMessage.payload.content += message.payload.content;
           continue;
@@ -108,13 +107,13 @@ export default function App() {
     }
   }
 
-  const isInitial = state.messages.length === 0;
+  const isWelcome = state.messages.length === 0;
 
   return (
     <main
       className={cn(
         'pb-28',
-        isInitial && 'flex h-screen flex-col justify-center',
+        isWelcome && 'flex h-screen flex-col justify-center',
       )}
     >
       {/* 标题 */}
@@ -124,7 +123,7 @@ export default function App() {
             'md:w-3xl bg-background relative mx-auto p-4 text-3xl font-medium',
           )}
         >
-          {isInitial ? '有什么可以帮忙的？' : 'Chatbot UI'}
+          {isWelcome ? '有什么可以帮忙的？' : 'Chatbot UI'}
         </h1>
       </section>
 
@@ -152,7 +151,7 @@ export default function App() {
       <section
         className={cn(
           'bg-background md:w-3xl w-full p-4 pt-0',
-          isInitial
+          isWelcome
             ? 'relative left-0 mx-auto -translate-x-0'
             : 'fixed bottom-0 left-1/2 -translate-x-1/2',
         )}
@@ -169,6 +168,7 @@ export default function App() {
             autoFocus
             value={state.input}
             onChange={(e) => (state.input = e.target.value)}
+            disabled={state.isConnecting || state.isReplying}
             placeholder="尽管问..."
           />
           <div

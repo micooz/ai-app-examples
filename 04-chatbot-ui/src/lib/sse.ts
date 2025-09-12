@@ -6,7 +6,7 @@ export type SSEOptions = {
 export async function sse<T>(path: string, options: SSEOptions) {
   const { params, signal } = options;
 
-  const search = new URLSearchParams(params).toString();
+  const search = new URLSearchParams(params);
   const url = `${path}?${search}`;
 
   return new Promise<AsyncGenerator<T | null>>((resolve, reject) => {
