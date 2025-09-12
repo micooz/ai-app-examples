@@ -17,7 +17,7 @@ API_KEY=sk-xxx
 在此目录下，执行以下命令：
 
 ```bash
-npm run start
+npm start
 ```
 
 # 视频讲解

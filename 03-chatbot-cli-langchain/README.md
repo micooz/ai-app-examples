@@ -18,7 +18,7 @@ API_KEY=sk-xxx
 
 ```bash
 npm install
-npm run start
+npm start
 ```
 
 # 视频讲解
