@@ -65,7 +65,7 @@ export default function App() {
       abortControllerRef.current = new AbortController();
 
       // 创建 SSE 连接
-      const stream = sse<ChatMessage>('/api/sse', {
+      const stream = await sse<ChatMessage>('/api/sse', {
         signal: abortControllerRef.current.signal,
         params: {
           query: state.input.trim(),
@@ -121,8 +121,7 @@ export default function App() {
       <section className="sticky left-0 top-0">
         <h1
           className={cn(
-            'md:w-3xl bg-background relative mx-auto py-4 text-3xl font-medium',
-            isInitial ? 'px-0 pb-0' : 'px-4',
+            'md:w-3xl bg-background relative mx-auto p-4 text-3xl font-medium',
           )}
         >
           {isInitial ? '有什么可以帮忙的？' : 'Chatbot UI'}
@@ -130,7 +129,11 @@ export default function App() {
       </section>
 
       {/* 聊天消息 */}
-      <section className="md:w-3xl mx-auto flex flex-col justify-between px-4 pb-6 leading-relaxed">
+      <section
+        className={cn(
+          'md:w-3xl mx-auto flex w-full flex-col justify-between px-4 pb-6 leading-relaxed',
+        )}
+      >
         <div className="flex flex-1 flex-col gap-4">
           {state.messages.map((message, index) => (
             <MessageItem key={index} message={message} />
@@ -148,13 +151,15 @@ export default function App() {
       {/* 底部输入框 */}
       <section
         className={cn(
-          'bg-background fixed bottom-0 left-0 w-full p-4 pt-0',
-          isInitial && 'relative',
+          'bg-background md:w-3xl w-full p-4 pt-0',
+          isInitial
+            ? 'relative left-0 mx-auto -translate-x-0'
+            : 'fixed bottom-0 left-1/2 -translate-x-1/2',
         )}
       >
         <div
           className={cn(
-            'md:w-3xl relative mx-auto flex flex-col gap-2 rounded-xl border-2 pb-10',
+            'relative flex flex-col gap-2 rounded-xl border-2 pb-10',
             'bg-background focus-within:border-primary',
           )}
         >

@@ -143,13 +143,18 @@ app.get('/sse', async (req, res) => {
       reply += content;
     }
   } catch (err: any) {
+    // 可以在这里处理前端的主动中断动作
     console.error(err);
   }
 
-  // 保存本次模型回复，即便中途结束。
+  // 保存本次模型回复，即便中途断开导致不完整。
   messages.push(new AIMessage(reply));
 
-  res.end();
+  // 最后发送一个 close 事件，触发前端 EventSource 的自定义 close 事件，
+  // 该事件必须通过 EventSource.addEventListener('close') 添加。
+  // 这里必须带一个 data: 否则前端的自定义 close 事件不会触发，原因是：
+  // 前端的自定义事件会在 message 事件触发后再触发。
+  res.end('event: close\ndata:\n\n');
 });
 
 app.listen(3000, () => {
