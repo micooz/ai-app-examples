@@ -1,4 +1,4 @@
-# 02-chatbot-cli-stream
+# 03-chatbot-cli-langchain
 
 一个基于命令行界面的聊天机器人（LangChainJS 版本）
 
@@ -17,6 +17,7 @@ API_KEY=sk-xxx
 在此目录下，执行以下命令：
 
 ```bash
+npm install
 npm run start
 ```
 
