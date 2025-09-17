@@ -4,9 +4,9 @@
 
 # 技术栈
 
-- Express（SSE）
-- LangChain（JS）
-- React（Vite）
+- Express：SSE 服务端实现（GET/POST）
+- LangChain：使用 TS 版本
+- React：Vite、SSE 客户端实现（GET/POST）
 - TailwindCSS
 - shadcn
 
