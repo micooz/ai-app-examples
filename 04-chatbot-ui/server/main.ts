@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { ChatOpenAI } from '@langchain/openai';
 import {
@@ -66,6 +66,9 @@ const messages: BaseMessage[] = [
 
 const app = express();
 
+// 添加 JSON 请求体解析中间件
+app.use(express.json());
+
 /**
  * 历史消息查询接口
  */
@@ -95,12 +98,27 @@ app.get('/history', (req, res) => {
 });
 
 /**
- * SSE 通信接口
+ * SSE 通信接口（EventSource GET 版本）
  */
-app.get('/sse', async (req, res) => {
-  const { query } = req.query;
+app.get('/sse', sseHandler);
 
-  messages.push(new HumanMessage(query as string));
+/**
+ * SSE 通信接口（fetch POST 版本）
+ */
+app.post('/sse', sseHandler);
+
+async function sseHandler(req: Request, res: Response) {
+  let query = '';
+
+  if (req.method === 'GET') {
+    query = req.query.query as unknown as string;
+  }
+
+  if (req.method === 'POST') {
+    query = req.body.query;
+  }
+
+  messages.push(new HumanMessage(query));
 
   const abortController = new AbortController();
 
@@ -155,7 +173,7 @@ app.get('/sse', async (req, res) => {
   // 这里必须带一个 data: 否则前端的自定义 close 事件不会触发，原因是：
   // 前端的自定义事件会在 message 事件触发后再触发。
   res.end('event: close\ndata:\n\n');
-});
+}
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

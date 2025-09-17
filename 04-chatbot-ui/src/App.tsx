@@ -3,7 +3,7 @@ import { useKeyPress, useMount, useReactive } from 'ahooks';
 import { useRef } from 'react';
 
 import { cn } from './lib/utils';
-import { sse } from './lib/sse';
+import { sse, ssePost } from './lib/sse';
 import type { ChatMessage } from './types';
 import { MessageItem } from './components/MessageItem';
 
@@ -63,8 +63,16 @@ export default function App() {
 
       abortControllerRef.current = new AbortController();
 
-      // 创建 SSE 连接
-      const stream = await sse<ChatMessage>('/api/sse', {
+      // 创建 SSE 连接（EventSource GET 版本）
+      // const stream = await sse<ChatMessage>('/api/sse', {
+      //   signal: abortControllerRef.current.signal,
+      //   params: {
+      //     query: state.input.trim(),
+      //   },
+      // });
+
+      // 创建 SSE 连接（fetch POST 版本）
+      const stream = await ssePost<ChatMessage>('/api/sse', {
         signal: abortControllerRef.current.signal,
         params: {
           query: state.input.trim(),
@@ -82,10 +90,6 @@ export default function App() {
 
       // 接收 SSE 消息
       for await (const message of stream) {
-        if (!message) {
-          break;
-        }
-
         const lastMessage = state.messages[state.messages.length - 1];
 
         // 合并不完全消息
