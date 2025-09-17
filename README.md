@@ -17,6 +17,7 @@
 - [01-chatbot-cli](./01-chatbot-cli)：一个基于命令行界面的最简聊天机器人。
 - [02-chatbot-cli-stream](./02-chatbot-cli-stream)：上面机器人的流式输出改进版本。
 - [03-chatbot-cli-langchain](./03-chatbot-cli-langchain)：引入 LangChain 框架的重构版本。
+- [04-chatbot-ui](./04-chatbot-ui)：带 Web UI 界面的版本，含服务端（Express）和前端（React/Vite）。
 
 # 环境准备
 

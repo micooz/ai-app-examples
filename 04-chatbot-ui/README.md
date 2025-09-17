@@ -1,4 +1,4 @@
-# 04-chatbot-ui（🚧 WIP）
+# 04-chatbot-ui
 
 带 Web UI 界面的聊天机器人
 
@@ -26,7 +26,13 @@ API_KEY=sk-xxx
 
 ```bash
 npm install
+
+# 同时启动前后端
 npm run dev
+
+# 或是分别启动前后端
+npm run dev:ui
+npm run dev:server
 ```
 
 # 视频讲解
