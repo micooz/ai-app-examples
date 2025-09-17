@@ -143,6 +143,9 @@ export async function ssePost<T>(path: string, options: SSEOptions) {
           }
         }
       })
-      .catch(reject);
+      .catch((err) => {
+        resolvers?.reject(err);
+        reject(err);
+      });
   });
 }
