@@ -3,6 +3,7 @@ import { useKeyPress, useMount, useReactive } from 'ahooks';
 import { useRef } from 'react';
 
 import { cn } from './lib/utils';
+// @ts-expect-error allow unused here
 import { sse, ssePost } from './lib/sse';
 import type { ChatMessage } from './types';
 import { MessageItem } from './components/MessageItem';

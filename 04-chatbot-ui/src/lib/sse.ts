@@ -93,7 +93,7 @@ export async function ssePost<T>(path: string, options: SSEOptions) {
       .then(async (res) => {
         // 这里拿到响应头，理论上要判断是不是 SSE 响应头。
         if (!res.ok) {
-          const text = await res.text();
+          const text = (await res.text()) || res.statusText;
           throw new Error(text);
         }
         // 返回生成器，这样调用方可以开始 for await 了。
