@@ -37,4 +37,4 @@ npm run dev:server
 
 # 视频讲解
 
-todo
+https://www.bilibili.com/video/BV1WtpizJEKn/
