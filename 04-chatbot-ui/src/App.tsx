@@ -169,7 +169,7 @@ export default function App() {
         >
           <input
             ref={inputRef}
-            className="h-11 resize-none px-4 outline-none"
+            className="h-11 resize-none px-3 outline-none"
             autoFocus
             value={state.input}
             onChange={(e) => (state.input = e.target.value)}

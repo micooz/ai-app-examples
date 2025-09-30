@@ -62,10 +62,15 @@ export async function sse<T>(path: string, options: SSEOptions) {
   });
 }
 
+export type SSEPostOptions = {
+  params: Record<string, any>;
+  signal: AbortSignal;
+};
+
 /**
  * 使用 fetch 发送 POST 请求
  */
-export async function ssePost<T>(path: string, options: SSEOptions) {
+export async function ssePost<T>(path: string, options: SSEPostOptions) {
   const { params, signal } = options;
 
   return new Promise<AsyncGenerator<T>>((resolve, reject) => {

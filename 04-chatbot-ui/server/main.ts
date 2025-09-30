@@ -73,8 +73,6 @@ app.use(express.json());
  * 历史消息查询接口
  */
 app.get('/history', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-
   // 把 LangChain 的 BaseMessage 转换为前端的 ChatMessage
   const historyMessages: ChatMessage[] = messages
     .map((message) => {
@@ -94,7 +92,7 @@ app.get('/history', (req, res) => {
     })
     .filter((message) => message !== null);
 
-  res.end(JSON.stringify(historyMessages));
+  res.json(historyMessages);
 });
 
 /**
@@ -136,7 +134,7 @@ async function sseHandler(req: Request, res: Response) {
   res.flushHeaders();
 
   // 如果客户端断开连接，则取消模型请求。
-  req.on('close', () => {
+  req.on('end', () => {
     // 这会让下面的 for await 循环抛出 Error: Aborted 异常。
     abortController.abort();
   });
