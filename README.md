@@ -14,6 +14,8 @@
 
 每个目录单独存放一个完整的可运行项目，请阅读每个目录下的 `README.md` 文件，了解项目介绍和运行方法。
 
+> 建议按照顺序学习，内容是按照后一个继承前一个的模式由浅入深安排的。
+
 - [01-chatbot-cli](./01-chatbot-cli)：一个基于命令行界面的最简聊天机器人。
 - [02-chatbot-cli-stream](./02-chatbot-cli-stream)：上面机器人的流式输出改进版本。
 - [03-chatbot-cli-langchain](./03-chatbot-cli-langchain)：引入 LangChain 框架的重构版本。

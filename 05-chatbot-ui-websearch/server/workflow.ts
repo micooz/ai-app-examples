@@ -19,7 +19,6 @@ export async function* stream(
   const { signal, query, websearch = false } = options;
 
   let context = loadContext();
-  let tmpMessage: ChatMessage;
 
   // 如果启用 websearch，则先生成搜索关键词，再进行搜索。
   if (websearch) {
@@ -37,34 +36,34 @@ export async function* stream(
       )
       .then((res) => res.content.toString());
 
-    tmpMessage = {
+    const keywordsMessage: ChatMessage = {
       type: 'assistant',
       payload: {
         subtype: 'websearch-keywords',
         content: keywords,
       },
-    } satisfies ChatMessage;
+    };
 
-    messages.push(tmpMessage);
+    messages.push(keywordsMessage);
 
     // 通知前端展示搜索关键词
-    yield tmpMessage;
+    yield keywordsMessage;
 
     // 2. 进行搜索
     const searchResults = await tools.websearch(keywords);
 
-    tmpMessage = {
+    const searchResultsMessage: ChatMessage = {
       type: 'assistant',
       payload: {
         subtype: 'websearch-results',
         content: JSON.stringify(searchResults),
       },
-    } satisfies ChatMessage;
+    };
+
+    messages.push(searchResultsMessage);
 
     // 通知前端展示搜索结果
-    messages.push(tmpMessage);
-
-    yield tmpMessage;
+    yield searchResultsMessage;
   }
 
   // 上下文在经过 websearch 后会变化，重新加载一下。
@@ -83,7 +82,7 @@ export async function* stream(
       type: 'assistant',
       partial: true,
       payload: { subtype: 'reply', content },
-    } satisfies ChatMessage;
+    };
 
     reply += content;
   }
