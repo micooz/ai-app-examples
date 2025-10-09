@@ -1,5 +1,4 @@
-import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
+import express, { type Request, type Response } from 'express';
 import { ChatOpenAI } from '@langchain/openai';
 import {
   AIMessage,
@@ -10,9 +9,6 @@ import {
 
 // 和前端共享的类型
 import type { ChatMessage } from '../src/types';
-
-// 加载 .env 文件
-dotenv.config({ quiet: true });
 
 // 取得调用模型 API 的必要参数
 const API_KEY = process.env.API_KEY;

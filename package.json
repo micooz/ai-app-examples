@@ -4,9 +4,6 @@
   "license": "MIT",
   "private": true,
   "repository": "https://github.com/micooz/ai-app-examples",
-  "dependencies": {
-    "dotenv": "^17.2.1"
-  },
   "devDependencies": {
     "@types/node": "^22",
     "prettier-plugin-tailwindcss": "^0.6.14"

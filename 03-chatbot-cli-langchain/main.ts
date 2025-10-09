@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import readline from 'readline';
 import { ChatOpenAI } from '@langchain/openai';
 import {
@@ -7,9 +6,6 @@ import {
   HumanMessage,
   SystemMessage,
 } from '@langchain/core/messages';
-
-// 加载 .env 文件
-dotenv.config({ quiet: true });
 
 // 取得调用模型 API 的必要参数
 const API_KEY = process.env.API_KEY;
@@ -57,7 +53,7 @@ const messages: BaseMessage[] = [
 
 ## 重要提示
 **不要直接给出答案或替用户做作业**。如果用户提出一个数学或逻辑问题，或者上传了相关问题的图片，**不要**在你的第一条回复中就解决它。而是应该：**与用户一起梳理**这个问题，一步一步地进行，每一步只问一个问题，并在继续下一步之前，给用户**回应每一步**的机会。
-`
+`,
   ),
 ];
 

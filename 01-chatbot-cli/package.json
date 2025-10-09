@@ -5,6 +5,6 @@
   "main": "main.ts",
   "type": "module",
   "scripts": {
-    "start": "npx tsx main.ts"
+    "start": "node --env-file .env main.ts"
   }
 }

@@ -1,11 +1,11 @@
 import { HumanMessage } from '@langchain/core/messages';
 
-import { loadContext, messages } from './context';
-import { llm } from './llm';
-import * as tools from './tools';
+import { loadContext, messages } from './context.ts';
+import { llm } from './llm.ts';
+import * as tools from './tools.ts';
 
 // 和前端共享的类型
-import type { ChatMessage } from '../src/types';
+import type { ChatMessage } from '../src/types/index.ts';
 
 export type StreamOptions = {
   signal: AbortSignal;

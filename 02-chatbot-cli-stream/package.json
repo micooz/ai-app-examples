@@ -4,7 +4,7 @@
   "description": "A simple chatbot CLI in stream mode",
   "type": "module",
   "scripts": {
-    "start:basic": "npx tsx ./basic/main.ts",
-    "start:advanced": "npx tsx ./advanced/main.ts"
+    "start:basic": "node --env-file .env ./basic/main.ts",
+    "start:advanced": "node --env-file .env ./advanced/main.ts"
   }
 }

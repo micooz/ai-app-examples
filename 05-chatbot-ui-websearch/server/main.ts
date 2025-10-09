@@ -1,10 +1,10 @@
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
 
 // 和前端共享的类型
-import type { ChatMessage } from '../src/types';
+import type { ChatMessage } from '../src/types/index.ts';
 
-import { messages } from './context';
-import * as workflow from './workflow';
+import { messages } from './context.ts';
+import * as workflow from './workflow.ts';
 
 const app = express();
 

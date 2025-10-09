@@ -1,8 +1,4 @@
-import dotenv from 'dotenv';
 import readline from 'readline';
-
-// 加载 .env 文件
-dotenv.config({ quiet: true });
 
 // 取得调用模型 API 的必要参数
 const API_KEY = process.env.API_KEY;
