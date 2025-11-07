@@ -2,8 +2,6 @@
 
 带联网搜索功能的 Web UI 聊天机器人（Agent / LangGraph 版本）
 
-![graph](./graph.png)
-
 # 功能特性
 
 - 使用免费 Bing 搜索接口
@@ -41,6 +39,10 @@ npm run dev:server
 访问下面的接口查看当前上下文：
 
 http://localhost:5173/api/context
+
+# Graph 结构示意图
+
+<img src="./graph.png" width="400" />
 
 # 视频讲解
 
