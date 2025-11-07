@@ -2,6 +2,8 @@
 
 带联网搜索功能的 Web UI 聊天机器人（Agent / LangGraph 版本）
 
+![graph](./graph.png)
+
 # 功能特性
 
 - 使用免费 Bing 搜索接口
