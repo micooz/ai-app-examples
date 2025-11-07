@@ -1,6 +1,6 @@
 {
-  "name": "chatbot-ui-agent",
-  "description": "A chatbot web ui with web search function (Agentic)",
+  "name": "chatbot-ui-langgraph",
+  "description": "A chatbot web ui with web search function (LangGraph)",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@langchain/core": "0.3.73",
+    "@langchain/langgraph": "0.4.9",
     "@langchain/openai": "^0.6.11",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.13",

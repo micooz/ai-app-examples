@@ -1,4 +1,8 @@
-import { ToolMessage, type AIMessageChunk } from '@langchain/core/messages';
+import {
+  BaseMessage,
+  ToolMessage,
+  type AIMessageChunk,
+} from '@langchain/core/messages';
 import type { ToolCall } from '@langchain/core/messages/tool';
 import { type DynamicStructuredTool } from '@langchain/core/tools';
 
@@ -6,7 +10,7 @@ import { type DynamicStructuredTool } from '@langchain/core/tools';
  * 判断模型返回消息是否为工具调用
  */
 export function isToolCall(
-  message: AIMessageChunk,
+  message?: BaseMessage,
 ): message is AIMessageChunk & { tool_calls: ToolCall[] } {
   return Boolean(
     message &&

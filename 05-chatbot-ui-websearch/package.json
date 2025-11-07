@@ -1,6 +1,6 @@
 {
   "name": "chatbot-ui-websearch",
-  "description": "A chatbot web ui with web search function",
+  "description": "A chatbot web ui with web search function (Workflow)",
   "private": true,
   "version": "0.0.0",
   "type": "module",

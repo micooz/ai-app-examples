@@ -17,14 +17,14 @@
 > 建议按照顺序学习，内容是按照后一个继承前一个的模式由浅入深安排的。
 
 - [01-chatbot-cli](./01-chatbot-cli)：一个基于命令行界面的最简聊天机器人。
-- [02-chatbot-cli-stream](./02-chatbot-cli-stream)：上面机器人的流式输出改进版本。
+- [02-chatbot-cli-stream](./02-chatbot-cli-stream)：流式输出改进版本。
 - [03-chatbot-cli-langchain](./03-chatbot-cli-langchain)：引入 LangChain 框架的重构版本。
 - [04-chatbot-ui](./04-chatbot-ui)：带 Web UI 界面的版本，含服务端（Express）和前端（React/Vite）的 SSE GET/POST 实现。
 - [05-chatbot-ui-websearch](./05-chatbot-ui-websearch)：添加联网搜索功能（Workflow 范式）。
-- [06-chatbot-ui-agent](./06-chatbot-ui-agent)：联网搜索的进阶版本（Agentic 范式）。
+- [06-chatbot-ui-agent](./06-chatbot-ui-agent)：联网搜索的 Agent 版本（Agentic 范式）。
+- [07-chatbot-ui-langgraph](./07-chatbot-ui-langgraph)：引入 LangGraph 框架的重构版本。
 
 <!--
-- [07-chatbot-ui-langgraph](./07-chatbot-ui-langgraph)：引入 LangGraph 框架的重构版本（WIP）。
 - [08-coding-agent](./08-coding-agent)：自动写简单前端项目（HTML/CSS/JS）的编程工具（LangGraph + ReAct）（WIP）。 -->
 
 # 环境准备
