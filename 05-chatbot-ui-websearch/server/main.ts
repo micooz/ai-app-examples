@@ -3,8 +3,9 @@ import express, { type Request, type Response } from 'express';
 // 和前端共享的类型
 import type { ChatMessage } from '../src/types/index.ts';
 
-import { messages } from './context.ts';
+import { context } from './context.ts';
 import * as workflow from './workflow.ts';
+import { AIMessageChunk, HumanMessage } from '@langchain/core/messages';
 
 const app = express();
 
@@ -15,22 +16,47 @@ app.use(express.json());
  * 历史消息查询接口
  */
 app.get('/history', (req, res) => {
-  const historyMessages: ChatMessage[] = messages.filter((message) => {
-    // 系统消息不能传给前端
-    if (message.type === 'system') {
-      return false;
-    }
-    return true;
-  });
+  const messages: ChatMessage[] = [];
 
-  res.json(historyMessages);
+  // 将 LangChain 消息类型转换为前端展示用的 ChatMessage 类型
+  for (const message of context) {
+    if (message instanceof HumanMessage) {
+      messages.push({
+        type: 'user',
+        payload: { content: message.content.toString() },
+      });
+    }
+
+    if (message instanceof AIMessageChunk) {
+      const content = message.content.toString();
+
+      if (content.startsWith('正在搜索：')) {
+        messages.push({
+          type: 'websearch-keywords',
+          payload: { keywords: content.slice(5) },
+        });
+      } else if (content.startsWith('搜索结果：')) {
+        messages.push({
+          type: 'websearch-results',
+          payload: { searchResults: JSON.parse(content.slice(5)) },
+        });
+      } else {
+        messages.push({
+          type: 'assistant',
+          payload: { content: message.content.toString() },
+        });
+      }
+    }
+  }
+
+  res.json(messages);
 });
 
 /**
- * 全量消息查询接口（方便调试）
+ * 全量上下文查询接口（方便调试）
  */
-app.get('/messages', (req, res) => {
-  res.json(messages);
+app.get('/context', (req, res) => {
+  res.json(context);
 });
 
 /**
@@ -56,11 +82,6 @@ async function sseHandler(req: Request, res: Response) {
     query = req.body.query;
     websearch = req.body.websearch;
   }
-
-  messages.push({
-    type: 'user',
-    payload: { content: query },
-  });
 
   const abortController = new AbortController();
 

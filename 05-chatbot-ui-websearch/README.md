@@ -1,6 +1,6 @@
 # 05-chatbot-ui-websearch
 
-带联网搜索功能的 Web UI 聊天机器人
+带联网搜索功能的 Web UI 聊天机器人（Workflow）
 
 # 功能特性
 
@@ -42,4 +42,4 @@ http://localhost:5173/api/messages
 
 # 视频讲解
 
-todo
+https://www.bilibili.com/video/BV18G2TBHENq/

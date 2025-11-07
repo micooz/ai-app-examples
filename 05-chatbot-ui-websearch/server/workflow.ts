@@ -1,6 +1,6 @@
-import { HumanMessage } from '@langchain/core/messages';
+import { AIMessageChunk, HumanMessage } from '@langchain/core/messages';
 
-import { loadContext, messages } from './context.ts';
+import { context } from './context.ts';
 import { llm } from './llm.ts';
 import * as tools from './tools.ts';
 
@@ -18,7 +18,8 @@ export async function* stream(
 ): AsyncGenerator<ChatMessage> {
   const { signal, query, websearch = false } = options;
 
-  let context = loadContext();
+  // 添加用户消息到上下文
+  context.push(new HumanMessage(query));
 
   // 如果启用 websearch，则先生成搜索关键词，再进行搜索。
   if (websearch) {
@@ -37,14 +38,14 @@ export async function* stream(
       .then((res) => res.content.toString());
 
     const keywordsMessage: ChatMessage = {
-      type: 'assistant',
+      type: 'websearch-keywords',
       payload: {
-        subtype: 'websearch-keywords',
-        content: keywords,
+        keywords,
       },
     };
 
-    messages.push(keywordsMessage);
+    // 将搜索关键词添加到上下文
+    context.push(new AIMessageChunk(`正在搜索：${keywords}`));
 
     // 通知前端展示搜索关键词
     yield keywordsMessage;
@@ -53,21 +54,20 @@ export async function* stream(
     const searchResults = await tools.websearch(keywords);
 
     const searchResultsMessage: ChatMessage = {
-      type: 'assistant',
+      type: 'websearch-results',
       payload: {
-        subtype: 'websearch-results',
-        content: JSON.stringify(searchResults),
+        searchResults,
       },
     };
 
-    messages.push(searchResultsMessage);
+    // 将搜索结果添加到上下文
+    context.push(
+      new AIMessageChunk(`搜索结果：${JSON.stringify(searchResults)}`),
+    );
 
     // 通知前端展示搜索结果
     yield searchResultsMessage;
   }
-
-  // 上下文在经过 websearch 后会变化，重新加载一下。
-  context = loadContext();
 
   // 调用模型 API
   const stream = await llm.stream(context, { signal });
@@ -81,15 +81,12 @@ export async function* stream(
     yield {
       type: 'assistant',
       partial: true,
-      payload: { subtype: 'reply', content },
+      payload: { content },
     };
 
     reply += content;
   }
 
   // 保存本次模型回复，即便中途断开导致不完整。
-  messages.push({
-    type: 'assistant',
-    payload: { subtype: 'reply', content: reply },
-  });
+  context.push(new AIMessageChunk(reply));
 }

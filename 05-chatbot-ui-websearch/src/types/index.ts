@@ -13,8 +13,21 @@ export type ChatMessage =
       type: 'assistant';
       partial?: boolean;
       payload: {
-        subtype: 'websearch-keywords' | 'websearch-results' | 'reply';
         content: string;
+      };
+    }
+  | {
+      type: 'websearch-keywords';
+      partial?: false;
+      payload: {
+        keywords: string;
+      };
+    }
+  | {
+      type: 'websearch-results';
+      partial?: false;
+      payload: {
+        searchResults: WebsearchResult;
       };
     };
 

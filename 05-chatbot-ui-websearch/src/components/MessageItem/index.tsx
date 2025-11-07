@@ -24,6 +24,16 @@ export function MessageItem(props: MessageItemProps) {
       {message.type === 'assistant' && (
         <AssistantMessage {...message.payload} />
       )}
+
+      {message.type === 'websearch-keywords' && (
+        <WebsearchKeywordsMessage keywords={message.payload.keywords} />
+      )}
+
+      {message.type === 'websearch-results' && (
+        <WebsearchResultsMessage
+          searchResults={message.payload.searchResults}
+        />
+      )}
     </div>
   );
 }
@@ -34,45 +44,32 @@ function UserMessage(props: { content: string }) {
   return <p className="rounded-full bg-neutral-100 px-4 py-1.5">{content}</p>;
 }
 
-function AssistantMessage(props: {
-  subtype: 'websearch-keywords' | 'websearch-results' | 'reply';
-  content: string;
-}) {
-  const { subtype, content } = props;
+function AssistantMessage(props: { content: string }) {
+  const { content } = props;
 
-  if (subtype === 'websearch-keywords') {
-    return <WebsearchKeywordsMessage content={content} />;
-  }
-
-  if (subtype === 'websearch-results') {
-    return <WebsearchResultsMessage content={content} />;
-  }
-
-  if (subtype === 'reply') {
-    return <ReplyMessage content={content} />;
-  }
-
-  return null;
+  return (
+    <div className="markdown-body">
+      <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+    </div>
+  );
 }
 
-function WebsearchKeywordsMessage(props: { content: string }) {
-  const { content } = props;
+function WebsearchKeywordsMessage(props: { keywords: string }) {
+  const { keywords } = props;
 
   return (
     <div className="flex items-center gap-2 truncate rounded-full bg-neutral-100 px-4 py-1.5">
       <SearchIcon className="shrink-0" size={18} />
       <span className="truncate">
         正在搜索：
-        <span className="text-sm text-gray-500">{content}</span>
+        <span className="text-sm text-gray-500">{keywords}</span>
       </span>
     </div>
   );
 }
 
-function WebsearchResultsMessage(props: { content: string }) {
-  const { content } = props;
-
-  const searchResults = JSON.parse(content) as WebsearchResult;
+function WebsearchResultsMessage(props: { searchResults: WebsearchResult }) {
+  const { searchResults } = props;
 
   const [showAll, setShowAll] = useState(false);
 
@@ -88,9 +85,9 @@ function WebsearchResultsMessage(props: { content: string }) {
 
       {/* 结果列表 */}
       <div className="flex flex-col">
-        {displayedResults.map((result: any) => (
+        {displayedResults.map((result, index) => (
           <a
-            key={result.title}
+            key={index}
             className="mx-2 flex flex-col gap-1 rounded-md p-2 hover:bg-neutral-200"
             href={result.link}
             target="_blank"
@@ -110,16 +107,6 @@ function WebsearchResultsMessage(props: { content: string }) {
           {showAll ? '收起' : '展开所有'}
         </span>
       </div>
-    </div>
-  );
-}
-
-function ReplyMessage(props: { content: string }) {
-  const { content } = props;
-
-  return (
-    <div className="markdown-body">
-      <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
     </div>
   );
 }
