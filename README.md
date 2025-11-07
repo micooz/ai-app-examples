@@ -21,7 +21,7 @@
 - [03-chatbot-cli-langchain](./03-chatbot-cli-langchain)：引入 LangChain 框架的重构版本。
 - [04-chatbot-ui](./04-chatbot-ui)：带 Web UI 界面的版本，含服务端（Express）和前端（React/Vite）的 SSE GET/POST 实现。
 - [05-chatbot-ui-websearch](./05-chatbot-ui-websearch)：添加联网搜索功能（Workflow 范式）。
-- [06-chatbot-ui-agent](./06-chatbot-ui-agent)：使用 Agentic（ReAct）范式实现联网搜索（Agentic 范式）。
+- [06-chatbot-ui-agent](./06-chatbot-ui-agent)：联网搜索的进阶版本（Agentic 范式）。
 
 <!--
 - [07-chatbot-ui-langgraph](./07-chatbot-ui-langgraph)：引入 LangGraph 框架的重构版本（WIP）。
